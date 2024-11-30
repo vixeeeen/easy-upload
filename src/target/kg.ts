@@ -3,6 +3,7 @@ import {
   getInfoFromBDInfo, getInfoFromMediaInfo,
   getBDType,
 } from '../common';
+import DOMPurify from 'dompurify';
 import { PT_SITE } from '../const';
 
 export default async (info:TorrentInfo.Info) => {
@@ -44,10 +45,10 @@ export default async (info:TorrentInfo.Info) => {
         poster = info.poster || '';
       }
       $('select[name="country_id"]').val(countryMap[countryValue as keyof typeof countryMap]);
-      const descriptionBBCode = `[img]${poster}[/img]
-      \nSynopsis:\n[quote]${description}[/quote]
+      const descriptionBBCode = `[img]${encodeURI(poster)}[/img]
+      \nSynopsis:\n[quote]${encodeURI(description)}[/quote]
       \n\n${screenshots.map(img => `[img]${encodeURI(img)}[/img]`).join('')}`;
-      $('#bbcodetextarea').html(descriptionBBCode);
+      $('#bbcodetextarea').html(DOMPurify.sanitize(descriptionBBCode));
       const [mainGenre, otherGenre = ''] = genre;
       $('select[name="genre_main_id"]').val(genreMap[mainGenre as keyof typeof genreMap]);
       $('select[name="subgenre"]').val(genreMap[otherGenre as keyof typeof genreMap]);
